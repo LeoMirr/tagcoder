@@ -1,0 +1,28 @@
+Mp3 tag's text encoder/decoder
+by me aka Leo Mirr oslagy@gmail.com
+Note: very first edition
+
+Run ui.py in this folder or use: find /where/is/my/music -iname '*.mp3' -print0 | xargs -O ./ui.py
+Note: there is some exemple mp3 files with tiny size.
+WARNING: this program not tested yet! It can destroy your music collection, your computer and your life!
+WARNING: use 'write' button carefully: if reading failed, you can write empty fields to files.
+
+Requirements:
+* python2
+* python2-tagpy
+* python2-pyqt4
+* python2-chardet
+
+Usage:
+* open files by 'open' button
+* click on field in table
+* WARNING: 'Set' button erase current field if editor empty!
+* use 'Get' to copy field to editor
+* use 'Auto Code' to try auto detect encoding
+* use 'Decode' to encode editor's content by 'Encoder' and decode by 'Decodeer' and write it to output
+* use 'Swap' to swap editor and output
+* use 'Set' to write text from editor to current field. 
+* uncheck 'Edite' to instantly copy field to editor end decode to editor instead output, you still need set button
+* select fields in first column (files) to write, close or re-read by appropriate buttons
+
+ps sory english bad
