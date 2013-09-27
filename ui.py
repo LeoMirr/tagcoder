@@ -1,6 +1,7 @@
 #!/usr/bin/python2
 # vim: set fileencoding=utf-8 :
-# This is mp3 tag editor with convenient encode options
+# Name: tagcoder
+# Description: This is mp3 tag editor with convenient encode options
 
 import sys, traceback
 import tag
@@ -36,18 +37,23 @@ def _pull(tag, index, head, headref, func):
 
 def error():
 	(type, val, tb) = sys.exc_info()
-	traceback.print_tb( tb )
-	print type, val
-	w.statusBar.showMessage( u'%s %s' % (type, val) )
-	for line in traceback.format_tb( tb ):
-		e.text.appendPlainText( line )
-	e.text.appendPlainText( u'%s %s' % (type, val) )
+	traceback.print_exception(type, val, tb)
+	msg( ''.join( traceback.format_exception_only(type,val) ) )
+	e.text.appendPlainText( ''.join( traceback.format_exception(type, val, tb) ) )
 	e.show()
 
 def printerr(string):
-	print unicode(string)
+	sys.stderr.write( unicode(string) )
 	e.text.appendPlainText( unicode(string) )
 	e.show()
+
+def msg(m):
+	w.statusBar.showMessage( unicode( m ) )
+
+def msgexc():
+	(type, val, tb) = sys.exc_info()
+	traceback.print_exception(type, val, tb)
+	msg( ''.join( traceback.format_exception_only(type,val) ) )
 
 ### Current Table functions -----------------------
 ### -----------------------------------------------
@@ -67,41 +73,35 @@ def currentPullColumn( name ):
 	return currentHH[name]
 
 def currentIndexToReference(index,**a):
-	if index.isValid() \
-	and current.itemFromIndex(index) is not None:
-		f = currentGetFile()
-		( t, i ) = currentVHref[ index.row() ]
-		j = unicode( current.horizontalHeaderItem( index.column() ).text() )
-		#printerr( 'f:%s,j:%s,t:%s,i:%i;' % (f, j, t, i) )
-		if 'f' in a:
-			f=a['f']
-		if 'j' in a:
-			j=a['j']
-		if 't' in a:
-			t=a['t']
-		if 'i' in a:
-			i=a['i']
-		return [ f, j, t, i ]
+	f = currentGetFile()
+	( t, i ) = currentVHref[ index.row() ]
+	j = unicode( current.horizontalHeaderItem( index.column() ).text() )
+	#printerr( 'f:%s,j:%s,t:%s,i:%i;' % (f, j, t, i) )
+	if 'f' in a:
+		f=a['f']
+	if 'j' in a:
+		j=a['j']
+	if 't' in a:
+		t=a['t']
+	if 'i' in a:
+		i=a['i']
+	return ( f, j, t, i )
 
 def currentGetValue(index,**a):
-	r = currentIndexToReference(index,**a)
-	if r:
-		( f, j, t, i ) = r
-		return tag.tagsdata[f][j][t][i]
+	( f, j, t, i ) = currentIndexToReference(index,**a)
+	return tag.tagsdata[f][j][t][i]
 
 def currentSetValue(index,value,**a):
-	r = currentIndexToReference(index,**a)
-	if r:
-		( f, j, t, i ) = r
-		tag.tagsdata[f]['converted'][t][i] = value
-		(r,c) = ( ctSM.currentIndex().row(), ctSM.currentIndex().column() )
-		currentRefresh()
-		ctSM.setCurrentIndex( current.indexFromItem( current.item(r,c) )\
-			, QtGui.QItemSelectionModel.Select )
-		(r,c) = ( tSM.currentIndex().row(), tSM.currentIndex().column() )
-		tableFillRow( tSM.currentIndex().row() )
-		tSM.setCurrentIndex( table.indexFromItem( table.item(r,c) )\
-			, QtGui.QItemSelectionModel.Select )
+	( f, j, t, i ) = currentIndexToReference(index,**a)
+	tag.tagsdata[f]['converted'][t][i] = value
+	(r,c) = ( ctSM.currentIndex().row(), ctSM.currentIndex().column() )
+	currentRefresh()
+	ctSM.setCurrentIndex( current.indexFromItem( current.item(r,c) )\
+		, QtGui.QItemSelectionModel.Select )
+	(r,c) = ( tSM.currentIndex().row(), tSM.currentIndex().column() )
+	tableFillRow( tSM.currentIndex().row() )
+	tSM.setCurrentIndex( table.indexFromItem( table.item(r,c) )\
+		, QtGui.QItemSelectionModel.Select )
 
 def currentClear():
 	currentVH.clear()
@@ -109,21 +109,18 @@ def currentClear():
 	current.clear()
 
 def currentFill(filename):
-	try:
-		currentClear()
-		for f in currentHH.keys():
-			current.setHorizontalHeaderItem( currentHH[f] , QtGui.QStandardItem( f ) )
-		data=tag.tagsdata[filename]
-		for a in data.keys():
-			for t, values in data[a].iteritems():
-				for i, value in enumerate( values ):
-					if a == "chardet":
-						value = "c:%(confidence)f;a:%(auto)s;en:%(encoder)s;de:%(decoder)s" % value
-					current.setItem( _currentPullRow(t,i), currentPullColumn(a), QtGui.QStandardItem(unicode(value)) )
-		for f in currentVH.keys():
-			current.setVerticalHeaderItem( currentVH[f] , QtGui.QStandardItem( f ) )
-	except:
-		error()
+	currentClear()
+	for f in currentHH.keys():
+		current.setHorizontalHeaderItem( currentHH[f] , QtGui.QStandardItem( f ) )
+	data=tag.tagsdata[filename]
+	for a in data.keys():
+		for t, values in data[a].iteritems():
+			for i, value in enumerate( values ):
+				if a == "chardet":
+					value = "c:%(confidence)f;a:%(auto)s;en:%(encoder)s;de:%(decoder)s" % value
+				current.setItem( _currentPullRow(t,i), currentPullColumn(a), QtGui.QStandardItem(unicode(value)) )
+	for f in currentVH.keys():
+		current.setVerticalHeaderItem( currentVH[f] , QtGui.QStandardItem( f ) )
 
 def currentGetFile():
 	return unicode( w.currentLabel.text() )
@@ -200,29 +197,26 @@ def swapButton():
 	string = unicode( w.text.toPlainText() )
 	w.text.setPlainText( w.editor.toPlainText() )
 	w.editor.setPlainText( string )
+	msg('Swap ok')
 
 def setButton():
 	try:
 		index = ctSM.currentIndex()
-		if index.isValid():
-			currentSetValue( index, unicode( w.text.toPlainText() ), j='converted' )
-		else:
-			w.statusBar.showMessage( u'Nothing is selected' )
+		currentSetValue( index, unicode( w.text.toPlainText() ), j='converted' )
+		msg('Set ok')
 	except:
-		error()
+		msgexc()
 
 def getButton():
 	try:
 		index = ctSM.currentIndex()
-		if index.isValid():
-			a = unicode( currentGetValue( index, j='original' ) )
-			b = unicode( currentGetValue( index, j='converted' ) )
-			w.editor.setPlainText( a )
-			w.text.setPlainText( b )
-		else:
-			w.statusBar.showMessage( u'Nothing is selected' )
+		a = unicode( currentGetValue( index, j='original' ) )
+		b = unicode( currentGetValue( index, j='converted' ) )
+		w.editor.setPlainText( a )
+		w.text.setPlainText( b )
+		msg('Get ok')
 	except:
-		error()
+		msgexc()
 
 def openButton(this):
 	addItems( [ unicode( f ) for f in QtGui.QFileDialog.getOpenFileNames(w,u"open music files") ] )
@@ -250,17 +244,18 @@ def autoButton():
 		w.encoderEditor.setText(res['encoder'])
 		w.decoderEditor.setText(res['decoder'])
 		codeOutput()( res['text'] )
-		w.statusBar.showMessage( 'encoder:%(encoder)s, decoder:%(decoder)s, auto decoder:%(auto)s, \
+		msg( 'encoder:%(encoder)s, decoder:%(decoder)s, auto decoder:%(auto)s, \
 confidence:%(confidence)f, decoded text:%(text)s' % res )
 	except:
-		error()
+		msgexc()
 
 def decodeButton():
 	try:
 		string = unicode( w.editor.toPlainText() ).encode( typeEnc() )
 		codeOutput()( string.decode( typeDec() ) )
+		msg('Decode ok')
 	except:
-		error()
+		msgexc()
 
 def editMod():
 	if w.editMod.isChecked():
@@ -277,26 +272,16 @@ def refreshDecode():
 ### ----------------------------------------------
 
 def currentIndexFromTable(index):
-	if index.isValid():
-		qi = table.itemFromIndex(index)
-		if qi:
-			qv = qi.data()
-			if qv.isValid():
-				name = unicode( qv.toString() )
-				if name in currentVH:
-					return current.indexFromItem( current.item( currentVH[name] , currentHH['converted'] ) )
-	return QtCore.QModelIndex()
+	qi = table.itemFromIndex(index)
+	qv = qi.data()
+	name = unicode( qv.toString() )
+	return current.indexFromItem( current.item( currentVH[name] , currentHH['converted'] ) )
 
 def tableIndexFromCurrent(index):
-	if index.isValid():
-		fi = table.item( tSM.currentIndex().row() , 0 )
-		if fi:
-			qv = fi.data()
-			if qv.isValid():
-				name = unicode( current.verticalHeaderItem( index.row() ).text() )
-				if QtCore.QString(name) in qv.toPyObject():
-					return table.indexFromItem( table.item( tSM.currentIndex().row() , qv.toPyObject()[QtCore.QString(name)] ) )
-	return QtCore.QModelIndex()
+	fi = table.item( tSM.currentIndex().row() , 0 )
+	qv = fi.data()
+	name = unicode( current.verticalHeaderItem( index.row() ).text() )
+	return table.indexFromItem( table.item( tSM.currentIndex().row() , qv.toPyObject()[QtCore.QString(name)] ) )
 
 def tSMc_func():
 	try:
@@ -305,11 +290,10 @@ def tSMc_func():
 			if filename != currentGetFile():
 				currentRefresh()
 			i = currentIndexFromTable( tSM.currentIndex() )
-			if i.isValid():
-				ctSM.clear()
-				ctSM.setCurrentIndex( i, QtGui.QItemSelectionModel.Select )
+			ctSM.clear()
+			ctSM.setCurrentIndex( i, QtGui.QItemSelectionModel.Select )
 	except:
-		error()
+		msgexc()
 
 def ctSMc_func():
 	try:
@@ -319,11 +303,10 @@ def ctSMc_func():
 			if filename != currentGetFile():
 				currentRefresh()
 			i = tableIndexFromCurrent( ctSM.currentIndex() )
-			if i.isValid():
-				tSM.clear()
-				tSM.setCurrentIndex( i, QtGui.QItemSelectionModel.Select )
+			tSM.clear()
+			tSM.setCurrentIndex( i, QtGui.QItemSelectionModel.Select )
 	except:
-		error()
+		msgexc()
 
 ### Functions that use table rows
 ### -------------------------------------------------------------
@@ -347,12 +330,12 @@ def readItems(rows):
 		fcount = 0
 		for row in rows:
 			filename = unicode( table.item( row, 0 ).text() )
-			w.statusBar.showMessage( u'Reading file %s' % filename )
+			msg( u'Reading file %s' % filename )
 			del tag.tagsdata[ filename ]
 			tag.readFile(filename)
 			tableFillRow( row )
 			fcount += 1
-		w.statusBar.showMessage( 'Readed %i file' % fcount )
+		msg( 'Readed %i file' % fcount )
 		currentRefresh()
 	except:
 		error()
@@ -366,6 +349,7 @@ def closeItems(rows):
 				del tag.tagsdata[ unicode( table.item(row, 0).text() ) ]
 			table.removeRows( row,1)
 		currentRefresh()
+		msg( "Close ok" )
 	except:
 		error()
 
@@ -373,7 +357,7 @@ def writeItems(filenames):
 	try:
 		fcount=0
 		for filename in filenames:
-			w.statusBar.showMessage( 'Writing file %s' % filename )
+			msg( 'Writing file %s' % filename )
 			data = tag.tagsdata[filename]
 			for t, values in data['converted'].iteritems():
 				for i, value in enumerate( values ):
@@ -381,7 +365,7 @@ def writeItems(filenames):
 						data['original'][t][i] = value
 			tag.writeFile( filename )
 			fcount +=1
-		w.statusBar.showMessage( 'Written %i file' % fcount )
+		msg( 'Written %i file' % fcount )
 		currentRefresh()
 	except:
 		error()
@@ -392,17 +376,17 @@ def addItems(filenames):
 		for filename in filenames:
 			tag.readFile( filename )
 			item = QtGui.QStandardItem( filename )
-			item.setEditable(False)
 			table.appendRow( [ item ] )
 			tableFillRow( table.indexFromItem( item ).row() )
-			w.statusBar.showMessage( u'Reading file %s' % filename )
+			msg( u'Reading file %s' % filename )
 			fcount +=1
-		w.statusBar.showMessage( 'Readed %i file' % fcount )
+		msg( 'Readed %i file' % fcount )
 		currentRefresh()
 	except:
 		error()
 
-if __name__ == '__main__':
+def init():
+	global app, w, e, table, current, tSM, ctSM
 	app = QtGui.QApplication([])
 
 	w = uic.loadUi("ui.ui")
@@ -427,6 +411,7 @@ if __name__ == '__main__':
 	w.closeButton.clicked.connect( lambda : closeItems(indexesToRows(tSM.selectedIndexes())) )
 	w.openButton.clicked.connect(openButton)
 	w.swapButton.clicked.connect(swapButton)
+	w.errorButton.clicked.connect( e.show )
 
 	# Refresh
 	tSM.selectionChanged.connect(tSMc_func)
@@ -438,6 +423,8 @@ if __name__ == '__main__':
 	addItems( [ a.decode('utf-8') for a in sys.argv[1:] ] )
 
 	editMod()
-	w.show()
 
+if __name__ == '__main__':
+	init()
+	w.show()
 	sys.exit( app.exec_() )

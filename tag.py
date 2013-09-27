@@ -9,9 +9,6 @@ tagpy.id3v2.FrameFactory.instance().setDefaultTextEncoding(tagpy.StringType.UTF8
 
 #import taglib
 
-# for output
-a=[]
-
 # tagsdata = { u'filename' : { 'original' : TAGS, 'converted' : TAGS, 'chardet' : CHARDET }, ... }
 # TAGS = { 'tag1' : [ 'value1', ... ], ... }
 # CHARDET = { 'tag1' : [ CHARDET_ITEM1, ... ], ... }
@@ -28,8 +25,7 @@ codeMap = {
 
 def error():
 	(type, val, tb) = sys.exc_info()
-	traceback.print_tb( tb )
-	print type, val
+	traceback.print_exception(type, val, tb)
 
 def codeReplace(code):
 	if code in codeMap:
@@ -49,7 +45,7 @@ def autoenc(text,encoder="latin1"):
 	try:
 		string=text.encode(encoder)
 	except UnicodeEncodeError:
-		print 'encoder %s not get it' % (encoder)
+		#print 'encoder %s not get it' % (encoder)
 		return res
 	u=UniversalDetector()
 	u.feed( string )
@@ -60,12 +56,12 @@ def autoenc(text,encoder="latin1"):
 	try:
 		ustring=string.decode( decoder )
 	except UnicodeDecodeError:
-		print 'decoder %s not get it' % (encoder)
+		#print 'decoder %s not get it' % (encoder)
 		return res
 	res={'text':ustring, 'auto':u.result['encoding'],
 		'encoder':encoder, 'decoder':decoder, 'confidence':u.result['confidence'] }
-	print unicode( u'encoder:%(encoder)s, decoder:%(decoder)s, auto decoder:%(auto)s, \
-confidence:%(confidence)f, decoded text:%(text)s' % res ).encode('utf-8')
+	#print unicode( u'encoder:%(encoder)s, decoder:%(decoder)s, auto decoder:%(auto)s, \
+#confidence:%(confidence)f, decoded text:%(text)s' % res ).encode('utf-8')
 	return res
 
 def decode(filename,text):
@@ -73,8 +69,7 @@ def decode(filename,text):
 	append=""
 	if res['auto'] == "":
 		return res
-	if ( res['auto'] != "windows-1251" ) and\
-		(res['auto'] != "ascii" ):
+	if res['auto'] not in ( "windows-1251", "ascii", "utf-8" ):
 		append = append + ", strange encoding " + res['auto']
 	if res['auto'] != res['decoder']:
 		append = append + ", " + res['auto'] + " change to " + res['decoder']
@@ -85,8 +80,8 @@ def decode(filename,text):
 	return res
 
 def parse(filename):
-	print filename + ":"
-	print "-" * 50
+	#print filename + ":"
+	#print "-" * 50
 	f=tagpy.FileRef( filename )
 	if f.isNull() == True:
 		raise IOError("Can't open file")
@@ -98,7 +93,7 @@ def parse(filename):
 	res['comment'] = decode( filename , f.tag().comment )['text']
 	res['track'] = f.tag().track
 	res['year'] = f.tag().year
-	print "-" * 50
+	#print "-" * 50
 	return res
 
 def getFileRef(filename):
@@ -174,11 +169,12 @@ def readFile(filename):
 	tagsdata[ filename ] = { 'original' : original, 'converted' : converted, 'chardet' : chardet }
 
 if __name__ == '__main__':
+	# for output
+	a=[]
 	tags={}
 	for f in sys.argv[1:]:
 		tags[f] = parse(f)
 
-	for n in a[:]:
-		print n
+	print "\n".join(a)
 
 	#print tags.viewitems()

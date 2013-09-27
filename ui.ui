@@ -20,16 +20,13 @@
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
-      <widget class="QFrame" name="tableFrame">
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
+      <widget class="QWidget" name="tableWidget" native="true">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QTableView" name="table">
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
           <property name="verticalScrollMode">
            <enum>QAbstractItemView::ScrollPerPixel</enum>
           </property>
@@ -84,18 +81,19 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="errorButton">
+             <property name="text">
+              <string>Errors</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QFrame" name="decoderFrame">
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
+      <widget class="QWidget" name="decoderWidget" native="true">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QWidget" name="widget" native="true">
@@ -128,6 +126,9 @@
                </item>
                <item>
                 <widget class="QTableView" name="currentTable">
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
                  <property name="verticalScrollMode">
                   <enum>QAbstractItemView::ScrollPerPixel</enum>
                  </property>
