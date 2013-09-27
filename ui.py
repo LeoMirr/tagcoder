@@ -215,9 +215,10 @@ def getButton():
 	try:
 		index = ctSM.currentIndex()
 		if index.isValid():
-			value = unicode( currentGetValue( index, j='original' ) )
-			w.editor.setPlainText( value )
-			w.text.setPlainText( value )
+			a = unicode( currentGetValue( index, j='original' ) )
+			b = unicode( currentGetValue( index, j='converted' ) )
+			w.editor.setPlainText( a )
+			w.text.setPlainText( b )
 		else:
 			w.statusBar.showMessage( u'Nothing is selected' )
 	except:
