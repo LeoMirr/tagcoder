@@ -45,16 +45,19 @@
          <widget class="QWidget" name="tableButtons" native="true">
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
-            <widget class="QPushButton" name="nCb">
+            <widget class="QPushButton" name="closeButton">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Remove selected rows,&lt;/p&gt;&lt;p&gt;and &lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;discard all &lt;/span&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;changes&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>close</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="nAb">
+            <widget class="QPushButton" name="openButton">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add row for typing name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open file browse dialog&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>open</string>
@@ -62,9 +65,9 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="nSb">
+            <widget class="QPushButton" name="writeButton">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Write to file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Write selected rows to files&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>Write</string>
@@ -72,9 +75,9 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="nRb">
+            <widget class="QPushButton" name="readButton">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Read from file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Read selected rows from files&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>Refresh</string>
@@ -96,42 +99,90 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QWidget" name="widget" native="true">
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="1" column="1">
-            <widget class="QPlainTextEdit" name="editor">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QSplitter" name="splitter_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QPlainTextEdit" name="text">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="editor_label">
-             <property name="text">
-              <string>Editor</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QLabel" name="text_label">
-             <property name="text">
-              <string>Output</string>
-             </property>
+             <widget class="QWidget" name="left" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_6">
+               <item>
+                <widget class="QLabel" name="currentLabel">
+                 <property name="frameShape">
+                  <enum>QFrame::NoFrame</enum>
+                 </property>
+                 <property name="text">
+                  <string>Please, select something.</string>
+                 </property>
+                 <property name="textFormat">
+                  <enum>Qt::AutoText</enum>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTableView" name="currentTable">
+                 <property name="verticalScrollMode">
+                  <enum>QAbstractItemView::ScrollPerPixel</enum>
+                 </property>
+                 <property name="horizontalScrollMode">
+                  <enum>QAbstractItemView::ScrollPerPixel</enum>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="right" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_5">
+               <item>
+                <widget class="QLabel" name="text_label">
+                 <property name="text">
+                  <string>Output</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPlainTextEdit" name="text">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="editor_label">
+                 <property name="text">
+                  <string>Editor</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPlainTextEdit" name="editor">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+              <zorder>text</zorder>
+              <zorder>editor</zorder>
+              <zorder>editor_label</zorder>
+              <zorder>text_label</zorder>
+             </widget>
             </widget>
            </item>
           </layout>
@@ -142,18 +193,18 @@
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
             <widget class="QCheckBox" name="editMod">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Determine editor's mod:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;Checked&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;* Editor is editable&lt;/p&gt;&lt;p&gt;* Selecting table's item &lt;span style=&quot; font-weight:600;&quot;&gt;will not &lt;/span&gt;change editor's content&lt;/p&gt;&lt;p&gt;* You need use &amp;quot;get&amp;quot; and &amp;quot;set&amp;quot; buttons&lt;/p&gt;&lt;p&gt;* &amp;quot;Auto code&amp;quot; and &amp;quot;Decode&amp;quot; buttons &lt;span style=&quot; font-weight:600;&quot;&gt;will not &lt;/span&gt;write to&lt;/p&gt;&lt;p&gt;  current item&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;Not checked&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;* Editor is not editable&lt;/p&gt;&lt;p&gt;* Selecting table's item &lt;span style=&quot; font-weight:600;&quot;&gt;will &lt;/span&gt;change editor's content&lt;/p&gt;&lt;p&gt;* &amp;quot;get&amp;quot; and &amp;quot;set&amp;quot; buttons is unnecessary but still work&lt;/p&gt;&lt;p&gt;* &amp;quot;Auto code&amp;quot; and &amp;quot;Decode&amp;quot; buttons &lt;span style=&quot; font-weight:600;&quot;&gt;will&lt;/span&gt; write to&lt;/p&gt;&lt;p&gt;  current item&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Edite</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="getBtn">
+            <widget class="QPushButton" name="getButton">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Get text from Table's selected item&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copy current item's text to editor&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>Get</string>
@@ -161,9 +212,9 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="setBtn">
+            <widget class="QPushButton" name="setButton">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set editor's text to Table's selected item&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copy output's text to current item&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>Set</string>
@@ -171,23 +222,29 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="swapBtn">
+            <widget class="QPushButton" name="swapButton">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Swap content of editor and output&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>swap</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="autodecBtn">
+            <widget class="QPushButton" name="autoButton">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Try to audo detect encoding&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>auto code</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="decBtn">
+            <widget class="QPushButton" name="decodeButton">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decode text within editor by decoder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decode text within editor&lt;/p&gt;&lt;p&gt;by encoder/decoder pair&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>Decode</string>
@@ -195,24 +252,31 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label2">
+            <widget class="QLabel" name="endoderLabel">
              <property name="text">
               <string>Encoder</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="encEdt"/>
+            <widget class="QLineEdit" name="encoderEditor">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Encoder for &amp;quot;Decode&amp;quot; button&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label1">
+            <widget class="QLabel" name="decoderLabel">
              <property name="text">
               <string>Decoder</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="decEdt">
+            <widget class="QLineEdit" name="decoderEditor">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoder for &amp;quot;Decode&amp;quot; button&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -228,46 +292,6 @@
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionOpen">
-   <property name="text">
-    <string>Open</string>
-   </property>
-  </action>
-  <action name="actionClose">
-   <property name="text">
-    <string>Close</string>
-   </property>
-  </action>
-  <action name="actionSave">
-   <property name="text">
-    <string>Save</string>
-   </property>
-  </action>
-  <action name="actionSave_all">
-   <property name="text">
-    <string>Save all</string>
-   </property>
-  </action>
-  <action name="actionReread">
-   <property name="text">
-    <string>Reread</string>
-   </property>
-  </action>
-  <action name="actionReread_all">
-   <property name="text">
-    <string>Reread all</string>
-   </property>
-  </action>
-  <action name="actionClose_2">
-   <property name="text">
-    <string>Close</string>
-   </property>
-  </action>
-  <action name="actionClose_all">
-   <property name="text">
-    <string>Close all</string>
-   </property>
-  </action>
  </widget>
  <resources/>
  <connections/>

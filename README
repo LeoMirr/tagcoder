@@ -1,11 +1,18 @@
-Mp3 tag's text encoder/decoder
+tagcoder
+-------------------------------------------------------------------------------
+mp3 tag's text encoder/decoder
 by me aka Leo Mirr oslagy@gmail.com
-Note: very first edition
 
-Run ui.py in this folder or use: find /where/is/my/music -iname '*.mp3' -print0 | xargs -O ./ui.py
+Sometimes i encounter that mp3 file have tags in different encodings and
+sometimes there is many of such files. So i decide to write a program that
+draw all tags of all files and allows to change encoding independently for
+every field.
+
 Note: there is some exemple mp3 files with tiny size.
-WARNING: this program not tested yet! It can destroy your music collection, your computer and your life!
-WARNING: use 'write' button carefully: if reading failed, you can write empty fields to files.
+Note: each gui element has tooltip
+
+WARNING: this program not tested very good yet! It can destroy your music
+collection, your computer and your life!
 
 Requirements:
 * python2
@@ -14,15 +21,7 @@ Requirements:
 * python2-chardet
 
 Usage:
-* open files by 'open' button
-* click on field in table
-* WARNING: 'Set' button erase current field if editor empty!
-* use 'Get' to copy field to editor
-* use 'Auto Code' to try auto detect encoding
-* use 'Decode' to encode editor's content by 'Encoder' and decode by 'Decodeer' and write it to output
-* use 'Swap' to swap editor and output
-* use 'Set' to write text from editor to current field. 
-* uncheck 'Edite' to instantly copy field to editor end decode to editor instead output, you still need set button
-* select fields in first column (files) to write, close or re-read by appropriate buttons
+Run ui.py in this folder or use:
+ find /where/is/my/music -iname '*.mp3' -print0 | xargs -O ./ui.py
 
 ps sory english bad

@@ -3,18 +3,20 @@
 import tagpy
 import tagpy.id3v1
 import tagpy.id3v2
-import sys, traceback
+import sys, traceback, copy
 from chardet.universaldetector import UniversalDetector
 tagpy.id3v2.FrameFactory.instance().setDefaultTextEncoding(tagpy.StringType.UTF8)
 
+#import taglib
+
 # for output
-global a
 a=[]
 
-def error():
-	(type, val, tb) = sys.exc_info()
-	traceback.print_tb( tb )
-	print type, val
+# tagsdata = { u'filename' : { 'original' : TAGS, 'converted' : TAGS, 'chardet' : CHARDET }, ... }
+# TAGS = { 'tag1' : [ 'value1', ... ], ... }
+# CHARDET = { 'tag1' : [ CHARDET_ITEM1, ... ], ... }
+# CHARDET_ITEM = { 'text' : 'string', 'encoder' : 'string', 'decoder' : 'string', 'auto' : 'string', 'confidence' : 0.99 }
+tagsdata={}
 
 codeMap = {
 'EUC-TW' : 'windows-1251',
@@ -23,6 +25,11 @@ codeMap = {
 'ISO-8859-5' : 'windows-1251',
 'GB2312' : 'windows-1251'
 }
+
+def error():
+	(type, val, tb) = sys.exc_info()
+	traceback.print_tb( tb )
+	print type, val
 
 def codeReplace(code):
 	if code in codeMap:
@@ -93,6 +100,78 @@ def parse(filename):
 	res['year'] = f.tag().year
 	print "-" * 50
 	return res
+
+def getFileRef(filename):
+	try:
+		fileref = tagpy.FileRef( filename.encode('utf-8') )
+	except ValueError as e:
+		raise Exception('type',e)
+	if fileref.isNull() == True:
+		raise Exception('open',"Can't open file")
+	return fileref
+
+def getFileTags(filename):
+	t = getFileRef( filename ).tag()
+	fields = {}
+	fields['genre'] = [ t.genre ]
+	fields['artist'] = [ t.artist ]
+	fields['album'] = [ t.album ]
+	fields['title'] = [ t.title ]
+	fields['comment'] = [ t.comment ]
+	fields['track'] = [ t.track ]
+	fields['year'] = [ t.year ]
+	return fields
+
+def _getFileTags(filename):
+	return copy.deepcopy( taglib.File( filename ).tags )
+
+def setFileTags(filename, tags):
+	ref = getFileRef( filename )
+	t = ref.tag()
+	(t.genre, \
+	t.artist, \
+	t.album, \
+	t.title, \
+	t.comment, \
+	t.track, \
+	t.year) = \
+	( tags['genre'][0], \
+	tags['artist'][0], \
+	tags['album'][0], \
+	tags['title'][0], \
+	tags['comment'][0], \
+	tags['track'][0], \
+	tags['year'][0])
+	ref.save()
+
+def _setFileTags(filename, tags):
+	ref = taglib.File(filename)
+	for tag, values in tags.iteritems():
+		for i, value in enumerate( values ):
+			if tag in ref.tags and i < len(ref.tags[tag]):
+				if value and isinstance( value, type(ref.tags[tag][i]) ):
+					ref.tags[tag][i] = value
+	for tag, values in ref.tags.iteritems():
+		for i, value in enumerate( values ):
+			print u"%s[%i] = \"%s\"" % ( tag, i, value )
+	ref.save()
+
+def writeFile(filename):
+	setFileTags( filename, tagsdata[filename]['original'] )
+
+def readFile(filename):
+	original = getFileTags( filename )
+	chardet = {}
+	converted = {}
+	for t, values in original.iteritems():
+		chardet[t] = []
+		converted[t] = []
+		for value in values:
+			if isinstance( value, type(u'string') ):
+				auto = autoenc( value )
+				chardet[t].append( auto )
+				converted[t].append( auto['text'] )
+	tagsdata[ filename ] = { 'original' : original, 'converted' : converted, 'chardet' : chardet }
 
 if __name__ == '__main__':
 	tags={}
