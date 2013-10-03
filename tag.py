@@ -7,7 +7,7 @@ import sys, traceback, copy
 from chardet.universaldetector import UniversalDetector
 tagpy.id3v2.FrameFactory.instance().setDefaultTextEncoding(tagpy.StringType.UTF8)
 
-#import taglib
+import taglib
 
 # tagsdata = { u'filename' : { 'original' : TAGS, 'converted' : TAGS, 'chardet' : CHARDET }, ... }
 # TAGS = { 'tag1' : [ 'value1', ... ], ... }
@@ -166,7 +166,9 @@ def readFile(filename):
 				auto = autoenc( value )
 				chardet[t].append( auto )
 				converted[t].append( auto['text'] )
-	tagsdata[ filename ] = { 'original' : original, 'converted' : converted, 'chardet' : chardet }
+	data = {filename:{ 'original' : original, 'converted' : converted, 'chardet' : chardet }}
+	tagsdata.update(data)
+	return data
 
 if __name__ == '__main__':
 	# for output

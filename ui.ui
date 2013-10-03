@@ -24,9 +24,6 @@
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QTableView" name="table">
-          <property name="editTriggers">
-           <set>QAbstractItemView::NoEditTriggers</set>
-          </property>
           <property name="verticalScrollMode">
            <enum>QAbstractItemView::ScrollPerPixel</enum>
           </property>
@@ -71,23 +68,6 @@
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QPushButton" name="readButton">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Read selected rows from files&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Refresh</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="errorButton">
-             <property name="text">
-              <string>Errors</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
@@ -126,9 +106,6 @@
                </item>
                <item>
                 <widget class="QTableView" name="currentTable">
-                 <property name="editTriggers">
-                  <set>QAbstractItemView::NoEditTriggers</set>
-                 </property>
                  <property name="verticalScrollMode">
                   <enum>QAbstractItemView::ScrollPerPixel</enum>
                  </property>
@@ -142,14 +119,31 @@
              <widget class="QWidget" name="right" native="true">
               <layout class="QVBoxLayout" name="verticalLayout_5">
                <item>
-                <widget class="QLabel" name="text_label">
+                <widget class="QLabel" name="converted_label">
                  <property name="text">
-                  <string>Output</string>
+                  <string>converted</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QPlainTextEdit" name="text">
+                <widget class="QPlainTextEdit" name="converted">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="original_label">
+                 <property name="text">
+                  <string>original</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPlainTextEdit" name="original">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -161,28 +155,11 @@
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="QLabel" name="editor_label">
-                 <property name="text">
-                  <string>Editor</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPlainTextEdit" name="editor">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                </widget>
-               </item>
               </layout>
-              <zorder>text</zorder>
-              <zorder>editor</zorder>
-              <zorder>editor_label</zorder>
-              <zorder>text_label</zorder>
+              <zorder>converted</zorder>
+              <zorder>original</zorder>
+              <zorder>original_label</zorder>
+              <zorder>converted_label</zorder>
              </widget>
             </widget>
            </item>
@@ -193,93 +170,49 @@
          <widget class="QWidget" name="decoderButtons" native="true">
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <widget class="QCheckBox" name="editMod">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Determine editor's mod:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;Checked&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;* Editor is editable&lt;/p&gt;&lt;p&gt;* Selecting table's item &lt;span style=&quot; font-weight:600;&quot;&gt;will not &lt;/span&gt;change editor's content&lt;/p&gt;&lt;p&gt;* You need use &amp;quot;get&amp;quot; and &amp;quot;set&amp;quot; buttons&lt;/p&gt;&lt;p&gt;* &amp;quot;Auto code&amp;quot; and &amp;quot;Decode&amp;quot; buttons &lt;span style=&quot; font-weight:600;&quot;&gt;will not &lt;/span&gt;write to&lt;/p&gt;&lt;p&gt;  current item&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;Not checked&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;* Editor is not editable&lt;/p&gt;&lt;p&gt;* Selecting table's item &lt;span style=&quot; font-weight:600;&quot;&gt;will &lt;/span&gt;change editor's content&lt;/p&gt;&lt;p&gt;* &amp;quot;get&amp;quot; and &amp;quot;set&amp;quot; buttons is unnecessary but still work&lt;/p&gt;&lt;p&gt;* &amp;quot;Auto code&amp;quot; and &amp;quot;Decode&amp;quot; buttons &lt;span style=&quot; font-weight:600;&quot;&gt;will&lt;/span&gt; write to&lt;/p&gt;&lt;p&gt;  current item&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Edite</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="getButton">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copy current item's text to editor&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Get</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="setButton">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copy output's text to current item&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Set</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="swapButton">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Swap content of editor and output&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>swap</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="autoButton">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Try to audo detect encoding&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>auto code</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="decodeButton">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decode text within editor&lt;/p&gt;&lt;p&gt;by encoder/decoder pair&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Decode</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="endoderLabel">
-             <property name="text">
-              <string>Encoder</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QLineEdit" name="encoderEditor">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Encoder for &amp;quot;Decode&amp;quot; button&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Encoder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>encode</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="decoderLabel">
+            <widget class="QLabel" name="codeLabel">
              <property name="text">
-              <string>Decoder</string>
+              <string>- &gt;</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QLineEdit" name="decoderEditor">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoder for &amp;quot;Decode&amp;quot; button&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string/>
+              <string>decode</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="convertButton">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;convert original with encode and decode&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>convert</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="chardetButton">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Try to auto detect encoding&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>chardet</string>
              </property>
             </widget>
            </item>

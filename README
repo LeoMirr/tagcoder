@@ -4,7 +4,7 @@ mp3 tag's text encoder/decoder
 by me aka Leo Mirr oslagy@gmail.com
 
 Sometimes i encounter that mp3 file have tags in different encodings and
-sometimes there is many of such files. So i decide to write a program that
+sometimes there is many of such files.BLe So i decide to write a program that
 draw all tags of all files and allows to change encoding independently for
 every field.
 
