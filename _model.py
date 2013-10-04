@@ -20,7 +20,7 @@ class multiModel(QAbstractItemModel):
 		header = '%s[%i]' % (t,i)
 		if header in self._headersR:
 			return self._headersR[header]
-		other = 'other[%i]' % v[0]
+		other = 'some tag #%i' % v[0]
 		v[0] += 1
 		if other not in self._headersR:
 			column = self.columnCount()
@@ -339,10 +339,14 @@ def multiSelectionToSingle(c):
 			if multi._file(c) != single._file:
 				single._toFile( multi._file(c) )
 			ref = multi._ref( c.row(), c.column() )
+			print ref
 			if ref:
 				rc = single._span(ref)
 				if rc:
 					w.currentTable.setCurrentIndex( multi.index(*rc) )
+			else:
+				w.currentTable.selectionModel().clearSelection()
+				w.currentTable.selectionModel().currentChanged.emit(QModelIndex(),QModelIndex())
 		else:
 			single.clear()
 	except:

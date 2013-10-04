@@ -115,53 +115,45 @@ def addItems(filenames):
 ### synchronization --------
 ### ------------------------
 
-def convertedToTable():
+block_editorsToTable = False
+def editorsToTable(text,field):
 	try:
+		global block_editorsToTable
+		if block_editorsToTable:
+			return
 		global block_changedItemToEditors
 		block_changedItemToEditors = True
 		ci = w.currentTable.currentIndex()
 		model = w.currentTable.model()
-		i = model.index( ci.row(), model._hheadersR['converted'] )
-		model.setData(i, QVariant( w.converted.toPlainText() ) )
+		i = model.index( ci.row(), model._hheadersR[field] )
+		model.setData(i, QVariant(text) )
 		block_changedItemToEditors = False
 	except:
 		error()
 
+def convertedToTable():
+	editorsToTable( w.converted.toPlainText(), 'converted' )
+
 def encoderToTable( text ):
-	try:
-		w.encoderEditor.blockSignals(True)
-		ci = w.currentTable.currentIndex()
-		model = w.currentTable.model()
-		i = model.index( ci.row(), model._hheadersR['encoder'] )
-		model.setData(i, QVariant(text) )
-		w.encoderEditor.blockSignals(False)
-	except:
-		error()
+	editorsToTable( text, 'encoder' )
 
 def decoderToTable( text ):
-	try:
-		w.decoderEditor.blockSignals(True)
-		ci = w.currentTable.currentIndex()
-		model = w.currentTable.model()
-		i = model.index( ci.row(), model._hheadersR['decoder'] )
-		model.setData(i, QVariant(text) )
-		w.decoderEditor.blockSignals(False)
-	except:
-		error()
+	editorsToTable( text, 'decoder' )
 
 block_changedItemToEditors = False
 def changedItemToEditors( tl, br ):
 	try:
 		if block_changedItemToEditors:
 			return
-		if tl.isValid()\
-		and tl == br:
-			rowToEditors(tl)
+		rowToEditors(w.currentTable.currentIndex())
 	except:
 		error()
 
 def rowToEditors( index ):
 	try:
+		print index.isValid()
+		global block_editorsToTable
+		block_editorsToTable = True
 		model = w.currentTable.model()
 		if index.isValid():
 			_ie = model.index( index.row(), model._hheadersR['encoder'] )
@@ -189,6 +181,7 @@ def rowToEditors( index ):
 			w.decoderEditor.clear()
 			w.original.clear()
 			w.converted.clear()
+		block_editorsToTable = False
 	except:
 		error()
 

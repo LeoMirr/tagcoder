@@ -106,15 +106,31 @@ def getFileRef(filename):
 	return fileref
 
 def getFileTags(filename):
-	t = getFileRef( filename ).tag()
+	ref = getFileRef( filename )
+	#t = ref.tag()
 	fields = {}
-	fields['genre'] = [ t.genre ]
-	fields['artist'] = [ t.artist ]
-	fields['album'] = [ t.album ]
-	fields['title'] = [ t.title ]
-	fields['comment'] = [ t.comment ]
-	fields['track'] = [ t.track ]
-	fields['year'] = [ t.year ]
+	#fields['genre'] = [ t.genre ]
+	#fields['artist'] = [ t.artist ]
+	#fields['album'] = [ t.album ]
+	#fields['title'] = [ t.title ]
+	#fields['comment'] = [ t.comment ]
+	#fields['track'] = [ t.track ]
+	#fields['year'] = [ t.year ]
+	_map = { 'TALB' : 'album',
+	'COMM' : 'comment',
+	'TRCK' : 'track',
+	'TPE1' : 'artist',
+	'TIT2' : 'title',
+	'TCON' : 'genre'}
+	ref.tag().duplicate(ref.file().ID3v1Tag(),ref.file().ID3v2Tag(),False)
+	for v in ref.file().ID3v2Tag().frameList():
+		if v.frameID() in _map:
+			key = _map[ v.frameID() ]
+		else:
+			key = v.frameID()
+		if key not in fields:
+			fields[key] = []
+		fields[key].append( v.toString() )
 	return fields
 
 def _getFileTags(filename):
