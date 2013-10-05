@@ -119,47 +119,80 @@
              <widget class="QWidget" name="right" native="true">
               <layout class="QVBoxLayout" name="verticalLayout_5">
                <item>
-                <widget class="QLabel" name="converted_label">
-                 <property name="text">
-                  <string>converted</string>
+                <widget class="QTabWidget" name="tabWidget">
+                 <property name="currentIndex">
+                  <number>1</number>
                  </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPlainTextEdit" name="converted">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="original_label">
-                 <property name="text">
-                  <string>original</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPlainTextEdit" name="original">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
+                 <widget class="QWidget" name="textTab">
+                  <attribute name="title">
+                   <string>Editor</string>
+                  </attribute>
+                  <layout class="QVBoxLayout" name="coderTabLayout">
+                   <item>
+                    <widget class="QLabel" name="converted_label">
+                     <property name="text">
+                      <string>converted</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPlainTextEdit" name="converted">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="original_label">
+                     <property name="text">
+                      <string>original</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPlainTextEdit" name="original">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                 <widget class="QWidget" name="possibTab">
+                  <attribute name="title">
+                   <string>Possibilities</string>
+                  </attribute>
+                  <layout class="QVBoxLayout" name="possibilitiesTabLayout">
+                   <item>
+                    <widget class="QTableView" name="possib">
+                     <property name="verticalScrollMode">
+                      <enum>QAbstractItemView::ScrollPerPixel</enum>
+                     </property>
+                     <property name="horizontalScrollMode">
+                      <enum>QAbstractItemView::ScrollPerPixel</enum>
+                     </property>
+                     <property name="sortingEnabled">
+                      <bool>true</bool>
+                     </property>
+                     <attribute name="horizontalHeaderDefaultSectionSize">
+                      <number>250</number>
+                     </attribute>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
                 </widget>
                </item>
               </layout>
-              <zorder>converted</zorder>
-              <zorder>original</zorder>
-              <zorder>original_label</zorder>
-              <zorder>converted_label</zorder>
              </widget>
             </widget>
            </item>

@@ -117,6 +117,31 @@ def addItems(filenames):
 ### synchronization --------
 ### ------------------------
 
+possibility_map=[
+('cp1252','cp1251'),
+('cp1251','utf-8'),
+('koi8-r', 'cp1251'),
+('latin1', 'utf-8'),
+('cp1251', 'utf-8'),
+]
+
+def fillPossib(index):
+	try:
+		possib = w.possib.model()
+		possib.clear()
+		possib.setHorizontalHeaderLabels( ['possibility'] )
+		single = w.currentTable.model()
+		qi = single.index( index.row(), single._hheadersR['original'] )
+		value = single.data( qi )
+		for e,d in possibility_map:
+			try:
+				item_text = unicode(value).encode(e).decode(d)+";e:"+e+";d:"+d+";"
+				possib.appendRow( QStandardItem( item_text ) )
+			except:
+				pass
+	except:
+		error()
+
 block_editorsToTable = False
 def editorsToTable(text,field):
 	try:
@@ -218,6 +243,9 @@ def init():
 	
 	w.currentTable.setModel( singleModel( tagsdata ) )
 	w.table.setModel( multiModel( tagsdata ) )
+	w.possib.setModel( QStandardItemModel() )
+	
+	w.currentTable.selectionModel().currentChanged.connect( fillPossib )
 
 	# connect
 	w.currentTable.model().dataChanged.connect(multiUpdate)
