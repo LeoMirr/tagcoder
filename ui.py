@@ -67,7 +67,7 @@ def convert():
 	except:
 		msgexc()
 
-### Functions that use table rows
+### Items
 ### -------------------------------------------------------------
 
 def closeItems():
@@ -105,10 +105,12 @@ def addItems(filenames):
 	try:
 		fcount=0
 		for filename in filenames:
-			w.table.model()._update( readFile( filename ) )
+			print filename
+			readFile( filename )
 			msg( 'Reading file %s' % filename )
 			fcount +=1
 		msg( 'Readed %i file' % fcount )
+		w.table.model()._update( tagsdata )
 	except:
 		error()
 
@@ -151,7 +153,6 @@ def changedItemToEditors( tl, br ):
 
 def rowToEditors( index ):
 	try:
-		print index.isValid()
 		global block_editorsToTable
 		block_editorsToTable = True
 		model = w.currentTable.model()
@@ -203,14 +204,13 @@ from PyQt4.QtGui import *
 from PyQt4.uic import *
 
 def init():
-
 	from _model import singleModel, multiModel, singleSelectionToMulti,\
 		multiSelectionToSingle, multiUpdate, singleUpdate
 	
 	global app, w, e
-	app = QApplication([])
-	w = loadUi("ui.ui")
-	e = loadUi('error.ui')
+	#app = QApplication([])
+	#w = loadUi("ui.ui")
+	#e = loadUi('error.ui')
 	
 	import _model
 	
@@ -239,11 +239,45 @@ def init():
 	w.closeButton.clicked.connect( closeItems )
 	w.openButton.clicked.connect(openButton)
 
-	addItems( [ a.decode('utf-8') for a in sys.argv[1:] ] )
-
-	#editMod()
-
 if __name__ == '__main__':
+	from threading import Thread
+	from time import sleep
+	from PyQt4.QtCore import QThread
+	
+	app = QApplication([])
+	w = loadUi("ui.ui")
+	e = loadUi('error.ui')
+	
+	from PyQt4.QtCore import QObject, pyqtSignal
+	
+	class loaderObject(QObject):
+		msg = pyqtSignal(QString)
+		def loadArgv(self):
+			self.addItems( a.decode('utf-8') for a in sys.argv[1:] )
+		def addItems(self, filenames):
+			fcount=0
+			for filename in filenames:
+				print filename
+				readFile( filename )
+				self.msg.emit( QString( 'Reading file %s' % filename ) )
+				fcount +=1
+			self.msg.emit( QString( 'Readed %i file' % fcount ) )
+			w.table.model()._update( tagsdata )
+	
+	loaderthread = QThread()
+	loader = loaderObject()
+	loader.moveToThread( loaderthread )
+	loader.msg.connect( w.statusBar.showMessage )
+	
+	class emiterObject(QObject):
+		signal = pyqtSignal()
+	emiter = emiterObject()
+	emiter.signal.connect( loader.loadArgv )
+	
+	loaderthread.start()
+	
 	init()
 	w.show()
+	emiter.signal.emit()
 	app.exec_()
+	loaderthread.exit()

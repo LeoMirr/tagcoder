@@ -31,6 +31,7 @@ class multiModel(QAbstractItemModel):
 		return self._headersR[other]
 	
 	def _update(self, _data):
+		self.modelAboutToBeReset.emit()
 		for filename, data in _data.iteritems():
 			v = [0]
 			if filename not in self._tableR:
@@ -52,6 +53,7 @@ class multiModel(QAbstractItemModel):
 							column = self._tagColumn( t, i, v )
 							self._table[row][column]=(t,i)
 							self._table[row]['t2c'][(t,i)]=column
+		self.modelReset.emit()
 		self.dataChanged.emit(QModelIndex(),QModelIndex())
 	
 	def _file( self, index ):
@@ -339,7 +341,6 @@ def multiSelectionToSingle(c):
 			if multi._file(c) != single._file:
 				single._toFile( multi._file(c) )
 			ref = multi._ref( c.row(), c.column() )
-			print ref
 			if ref:
 				rc = single._span(ref)
 				if rc:
