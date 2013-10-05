@@ -23,7 +23,7 @@ class multiModel(QAbstractItemModel):
 		other = 'some tag #%i' % v[0]
 		v[0] += 1
 		if other not in self._headersR:
-			column = self.columnCount()
+			column = len( self._headers )
 			self.beginInsertColumns(QModelIndex(), column, column)
 			self._headersR[other] = column
 			self._headers.append(other)
@@ -172,7 +172,7 @@ class singleModel(QAbstractItemModel):
 		self._file = filename
 		self._hheaders = ['original', 'converted', 'encoder', 'decoder', 'chardet']
 		self._hheadersR = { v:i for i,v in enumerate(self._hheaders) }
-		self._table = {}
+		self._table = []
 		self._tableR = {}
 		if filename:
 			self._update()
@@ -181,7 +181,7 @@ class singleModel(QAbstractItemModel):
 		if (t,i) not in self._tableR:
 			row = len(self._table)
 			self._tableR[(t,i)] = row
-			self._table[row] = (t,i)
+			self._table.append( (t,i) )
 		return self._tableR[(t,i)]
 	
 	def _update(self):
@@ -195,6 +195,7 @@ class singleModel(QAbstractItemModel):
 		_new = type(self)(self._data, filename=filename)
 		for attr in ('_file','_hheaders','_hheadersR','_table','_tableR'):
 			setattr( self, attr, getattr( _new, attr ) )
+		print self._table
 		self.modelReset.emit()
 	
 	def _ref(self, row, column):
@@ -251,7 +252,7 @@ class singleModel(QAbstractItemModel):
 	def clear(self):
 		self.modelAboutToBeReset.emit()
 		self._file = ''
-		self._table = {}
+		self._table = []
 		self._tableR = {}
 		self.modelReset.emit()
 	

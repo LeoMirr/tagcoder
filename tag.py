@@ -105,38 +105,87 @@ def getFileRef(filename):
 		raise Exception('open',"Can't open file")
 	return fileref
 
-def getFileTags(filename):
-	ref = getFileRef( filename )
-	#t = ref.tag()
-	fields = {}
-	#fields['genre'] = [ t.genre ]
-	#fields['artist'] = [ t.artist ]
-	#fields['album'] = [ t.album ]
-	#fields['title'] = [ t.title ]
-	#fields['comment'] = [ t.comment ]
-	#fields['track'] = [ t.track ]
-	#fields['year'] = [ t.year ]
-	_map = { 'TALB' : 'album',
+idToKey_map = { 'TALB' : 'album',
 	'COMM' : 'comment',
-	'TRCK' : 'track',
+	#'TRCK' : 'track',
 	'TPE1' : 'artist',
 	'TIT2' : 'title',
-	'TCON' : 'genre'}
-	ref.tag().duplicate(ref.file().ID3v1Tag(),ref.file().ID3v2Tag(),False)
+	'TCON' : 'genre',
+	'TPE2' : 'album-artist'}
+
+keyToId_map = { v:k for k,v in idToKey_map.iteritems() }
+
+def getFileTags(filename):
+	ref = getFileRef( filename )
+	t = ref.tag()
+	fields = {}
+	fields['genre'] = [ t.genre ]
+	fields['artist'] = [ t.artist ]
+	fields['album'] = [ t.album ]
+	fields['title'] = [ t.title ]
+	fields['comment'] = [ t.comment ]
+	fields['track'] = [ t.track ]
+	fields['year'] = [ t.year ]
+	return fields
+
+def getFileTags(filename):
+	ref = getFileRef( filename )
+	fields = {}
+	ref.tag().duplicate(ref.file().ID3v1Tag(), ref.file().ID3v2Tag(), False)
 	for v in ref.file().ID3v2Tag().frameList():
-		if v.frameID() in _map:
-			key = _map[ v.frameID() ]
+		if v.frameID() in idToKey_map:
+			key = idToKey_map[ v.frameID() ]
 		else:
-			key = v.frameID()
-		if key not in fields:
-			fields[key] = []
-		fields[key].append( v.toString() )
+			continue
+			#key = v.frameID()
+		if key == 'comment':
+			fields.setdefault(key,[]).append( v.toString() )
+			fields.setdefault(key+'.description',[]).append( v.description() )
+			continue
+		fields.setdefault(key,[]).append( v.toString() )
 	return fields
 
 def _getFileTags(filename):
 	return copy.deepcopy( taglib.File( filename ).tags )
 
 def setFileTags(filename, tags):
+	try:
+		ref = getFileRef( filename )
+		id3v2 = ref.file().ID3v2Tag()
+		for key,values in tags.iteritems():
+			for i, value in enumerate( values ):
+				if key in keyToId_map:
+					_id = keyToId_map[key]
+					#print 'removeFrames(%s)' % _id
+					id3v2.removeFrames( _id )
+		for key,values in tags.iteritems():
+			for i, value in enumerate( values ):
+				if key in keyToId_map:
+					_id = keyToId_map[key]
+					if _id == 'COMM':
+						frame = tagpy.id3v2.CommentsFrame()
+						frame.setText( value )
+						frame.setDescription( tags['comment.description'][i] )
+						id3v2.addFrame( frame )
+					else:
+						frame = tagpy.id3v2.TextIdentificationFrame(_id)
+						frame.setText( value )
+						id3v2.addFrame( frame )
+		"""for v in id3v2.frameList():
+			if v.frameID() in idToKey_map:
+				key = idToKey_map[ v.frameID() ]
+			else:
+				key = v.frameID()
+			if key == 'comment':
+				print unicode(key)+u':'+unicode( v.toString() )
+				print unicode(key+'.description')+u':'+unicode( v.description() )
+				continue
+			print unicode(key)+u':'+unicode( v.toString() )"""
+		#ref.save()
+	except:
+		error()
+
+def _setFileTags(filename, tags):
 	ref = getFileRef( filename )
 	t = ref.tag()
 	(t.genre, \
