@@ -1,7 +1,7 @@
 #!/usr/bin/python2
 # vim: set fileencoding=utf-8 :
 # Name: model
-# Description: seamless synchronization of model and data
+# Description: seamless synchronization of model and data NO
 
 from PyQt4.QtCore import QAbstractItemModel, Qt, QString, QModelIndex, QVariant
 from PyQt4.QtGui import QItemSelectionModel
@@ -370,8 +370,6 @@ from tag import error
 def init():
 	from PyQt4.QtGui import QApplication, QSortFilterProxyModel
 	from PyQt4.uic import loadUi
-	from ui import error, msgexc, printerr
-	import ui
 	import traceback, sys
 	from tag import readFile, tagsdata, error
 
@@ -379,7 +377,6 @@ def init():
 	
 	app = QApplication([])
 	w = loadUi("ui.ui")
-	e = loadUi('error.ui')
 	
 	global single
 	#readFile('tmp/exemple.mp3')

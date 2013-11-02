@@ -3,18 +3,6 @@
 # Name: tagcoder
 # Description: This is mp3 tag editor with convenient encode options
 
-def error():
-	(type, val, tb) = sys.exc_info()
-	traceback.print_exception(type, val, tb)
-	msg( ''.join( traceback.format_exception_only(type,val) ) )
-	e.text.appendPlainText( ''.join( traceback.format_exception(type, val, tb) ) )
-	e.show()
-
-def printerr(string):
-	sys.stderr.write( unicode(string) + u"\n" )
-	e.text.appendPlainText( unicode(string) )
-	e.show()
-
 def msg(m):
 	w.statusBar.showMessage( unicode( m ) )
 
@@ -22,15 +10,6 @@ def msgexc():
 	(type, val, tb) = sys.exc_info()
 	traceback.print_exception(type, val, tb)
 	msg( ''.join( traceback.format_exception_only(type,val) ) )
-
-def expect(strings, func = lambda : False ):
-	(type, val, tb) = sys.exc_info()
-	curr = ''.join( traceback.format_exception_only(type,val) )
-	if curr in strings:
-		msg(curr)
-		return strings[curr]()
-	else:
-		return func()
 
 ### Buttons ---------------------------------------
 ### -----------------------------------------------
@@ -222,75 +201,70 @@ def multiCurrentToLabel(c):
 		error()
 
 import sys, traceback
-from tag import readFile, tagsdata, autoenc_multi, writeFile
+from tag import autoenc_multi, error
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.uic import *
 
 def init():
-	from _model import singleModel, multiModel, singleSelectionToMulti,\
-		multiSelectionToSingle, multiUpdate, singleUpdate
+	from model import twoTables
 	
-	global app, w, e
-	#app = QApplication([])
-	#w = loadUi("ui.ui")
-	#e = loadUi('error.ui')
+	global app, w, two
+	app = QApplication([])
+	w = loadUi("ui.ui")
 	
-	import _model
+	two = twoTables( w.currentTable, w.table )
 	
-	_model.w = w
+	#~ w.possib.setModel( QStandardItemModel() )
 	
-	w.currentTable.setModel( singleModel( tagsdata ) )
-	w.table.setModel( multiModel( tagsdata ) )
-	w.possib.setModel( QStandardItemModel() )
-	
-	w.currentTable.selectionModel().currentChanged.connect( fillPossib )
+	#~ w.currentTable.selectionModel().currentChanged.connect( fillPossib )
 
-	# connect
-	w.currentTable.model().dataChanged.connect(multiUpdate)
-	w.currentTable.selectionModel().currentChanged.connect(singleSelectionToMulti)
-	w.table.model().dataChanged.connect(singleUpdate)
-	w.table.selectionModel().currentChanged.connect(multiSelectionToSingle)
-	
-	w.converted.textChanged.connect( convertedToTable )
-	w.encoderEditor.textChanged.connect( encoderToTable )
-	w.decoderEditor.textChanged.connect( decoderToTable )
-	w.currentTable.model().dataChanged.connect( changedItemToEditors )
-	w.currentTable.selectionModel().currentChanged.connect( rowToEditors )
-	w.table.selectionModel().currentChanged.connect( multiCurrentToLabel )
+	#~ w.converted.textChanged.connect( convertedToTable )
+	#~ w.encoderEditor.textChanged.connect( encoderToTable )
+	#~ w.decoderEditor.textChanged.connect( decoderToTable )
+	#~ w.currentTable.model().dataChanged.connect( changedItemToEditors )
+	#~ w.currentTable.selectionModel().currentChanged.connect( rowToEditors )
+	#~ w.table.selectionModel().currentChanged.connect( multiCurrentToLabel )
 	
 	# Buttons
-	w.convertButton.clicked.connect(convert)
-	w.chardetButton.clicked.connect(chardet)
-	w.writeButton.clicked.connect( writeItems )
-	w.closeButton.clicked.connect( closeItems )
-	w.openButton.clicked.connect(openButton)
+	#~ w.convertButton.clicked.connect(convert)
+	#~ w.chardetButton.clicked.connect(chardet)
+	#~ w.writeButton.clicked.connect( writeItems )
+	#~ w.closeButton.clicked.connect( closeItems )
+	#~ w.openButton.clicked.connect(openButton)
 
 if __name__ == '__main__':
 	from threading import Thread
 	from time import sleep
 	from PyQt4.QtCore import QThread
+	from tag import getFileTags
 	
-	app = QApplication([])
-	w = loadUi("ui.ui")
-	e = loadUi('error.ui')
+	init()
+	
+	data = {}
+	
+	"""for filename in ( a.decode('utf-8') for a in sys.argv[1:] ):
+		print filename
+		data[filename]=getFileTags(filename)
+	two.populateModel( data )"""
 	
 	from PyQt4.QtCore import QObject, pyqtSignal
 	
 	class loaderObject(QObject):
 		msg = pyqtSignal(QString)
+		loaded = pyqtSignal()
 		def loadArgv(self):
 			self.addItems( a.decode('utf-8') for a in sys.argv[1:] )
 		def addItems(self, filenames):
 			fcount=0
 			for filename in filenames:
 				print filename
-				readFile( filename )
 				self.msg.emit( QString( 'Reading file %s' % filename ) )
+				data[filename]=getFileTags(filename)
 				fcount +=1
 			self.msg.emit( QString( 'Readed %i file' % fcount ) )
-			w.table.model()._update( tagsdata )
+			self.loaded.emit()
 	
 	loaderthread = QThread()
 	loader = loaderObject()
@@ -299,12 +273,14 @@ if __name__ == '__main__':
 	
 	class emiterObject(QObject):
 		signal = pyqtSignal()
+		def populate(self):
+			two.populateModel( data )
 	emiter = emiterObject()
 	emiter.signal.connect( loader.loadArgv )
+	loader.loaded.connect( emiter.populate )
 	
 	loaderthread.start()
 	
-	init()
 	w.show()
 	emiter.signal.emit()
 	app.exec_()
