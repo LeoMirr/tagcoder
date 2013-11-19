@@ -1,4 +1,4 @@
-UNDONE YET
+it's ALREADY DEAD
 ==========
 
 tagcoder
@@ -6,5 +6,4 @@ tagcoder
 mp3 tag viewer with text encoding/decoding purpose
 
 TODO:
-* make saving
-* think of something
+* rest in peace
